@@ -1,10 +1,8 @@
-import express from "express";
-import morgan from "morgan";
-import { dndRouter } from "./dnd-router";
+import express, { Application } from "express";
+import { router } from "./router";
 
-const application = express();
+const application: Application = express();
 
-application.use(morgan("tiny"));
-application.use("/dnd", dndRouter);
+application.use(router);
 
-application.listen(3000, () => console.log("Server is running on port 3000"));
+application.listen(3000, () => console.log("C'est good"));
