@@ -1,13 +1,7 @@
 import { FetchCharClassesUseCase } from "../../usecases/FetchCharClassesUseCase";
-import { DndApiCharClassRepository } from "../../infrastructure/repositories/DndApiCharClassesRepository";
 
 export class CharClassController {
-  private fetchCharClassesUseCase: FetchCharClassesUseCase;
-
-  constructor() {
-    const repo = new DndApiCharClassRepository();
-    this.fetchCharClassesUseCase = new FetchCharClassesUseCase(repo);
-  }
+  constructor(private fetchCharClassesUseCase: FetchCharClassesUseCase) {}
 
   async fetchAllCharClasses(): Promise<any> {
     const charClasses = await this.fetchCharClassesUseCase.execute();
