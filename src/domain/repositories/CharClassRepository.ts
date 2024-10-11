@@ -1,3 +1,5 @@
+import { CharacterClass } from "../entities/characterClass";
+
 export interface CharClassRepository {
-  fetchAll(): Promise<any[]>;
+  fetchAll(): Promise<CharacterClass[]>;
 }

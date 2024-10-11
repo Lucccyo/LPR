@@ -1,6 +1,6 @@
 export class SubSpecies {
   constructor(
-    public id: string,
+    public index: string,
     public name: string,
   ) {}
 }

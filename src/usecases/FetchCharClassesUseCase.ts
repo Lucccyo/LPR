@@ -5,9 +5,7 @@ export class FetchCharClassesUseCase {
   constructor(private charClassRepository: CharClassRepository) {}
 
   async execute(): Promise<CharacterClass[]> {
-    const charClassData = await this.charClassRepository.fetchAll();
-    return charClassData.map(
-      (data: any) => new CharacterClass(data.index, data.name, data.url, [], "", "", [])
-    );
+    const charClasses = await this.charClassRepository.fetchAll();
+    return charClasses;
   }
 }
