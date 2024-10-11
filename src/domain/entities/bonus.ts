@@ -1,6 +1,6 @@
-export class Spell {
+export class Bonus {
   constructor(
     public id: string,
-    public name: string
+    public name: string,
   ) {}
 }

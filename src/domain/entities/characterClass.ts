@@ -1,5 +1,5 @@
-import { Mastery } from "./mastery"
-import { Spell } from "./spell"
+import { Mastery } from "./mastery";
+import { Spell } from "./spell";
 
 export class CharacterClass {
   constructor(
@@ -10,6 +10,5 @@ export class CharacterClass {
     public save_throws: string,
     public spell_characteristics: string,
     public base_spells: Spell[],
-  )
-  {}
+  ) {}
 }

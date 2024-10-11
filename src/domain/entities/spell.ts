@@ -1,6 +1,6 @@
-export class Mastery {
+export class Spell {
   constructor(
     public id: string,
-    public name: string
+    public name: string,
   ) {}
 }
