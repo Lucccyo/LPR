@@ -1,10 +1,17 @@
 import express from 'express';
+
+// Really not normal imo but it works for now
 import { CharClassController } from './interfaces/controllers/CharClassController';
 import { DndApiCharClassRepository } from './infrastructure/repositories/DndApiCharClassesRepository';
 import { FetchCharClassesUseCase } from './usecases/FetchCharClassesUseCase';
+
+import { SpeciesController } from './interfaces/controllers/SpeciesController';
 import { DndApiSpeciesRepository } from './infrastructure/repositories/DndApiSpeciesRepository';
 import { FetchSpeciesUseCase } from './usecases/FetchSpeciesUseCase';
-import { SpeciesController } from './interfaces/controllers/SpeciesController';
+
+import { AlignmentController } from './interfaces/controllers/AlignmentController';
+import { DndApiAlignmentRepository } from './infrastructure/repositories/DndApiAlignmentRepository';
+import { FetchAlignmentsUseCase } from './usecases/FetchAlignmentsUseCase';
 
 export function createDndRouter(): express.Router {
   const router = express.Router();
@@ -18,6 +25,10 @@ export function createDndRouter(): express.Router {
   const fetchSpeciesUseCase = new FetchSpeciesUseCase(speciesRepository);
   const speciesController = new SpeciesController(fetchSpeciesUseCase);
 
+  const alignmentRepository = new DndApiAlignmentRepository();
+  const fetchAlignmentsUseCase = new FetchAlignmentsUseCase(alignmentRepository);
+  const alignmentController = new AlignmentController(fetchAlignmentsUseCase);
+
   router.get('/classes', async (_request, response) => {
     try {
       const result = await charClassController.fetchAllCharClasses();
@@ -30,6 +41,15 @@ export function createDndRouter(): express.Router {
   router.get('/species', async (_request, response) => {
     try {
       const result = await speciesController.getSpecies(_request, response);
+      response.json(result);
+    } catch (error) {
+      handleError(error, response);
+    }
+  });
+
+  router.get('/alignments', async (_request, response) => {
+    try {
+      const result = await alignmentController.fetchAllAlignments();
       response.json(result);
     } catch (error) {
       handleError(error, response);
