@@ -1,6 +1,6 @@
 export class Spell {
   constructor(
-    public id: string,
+    public index: string,
     public name: string,
   ) {}
 }

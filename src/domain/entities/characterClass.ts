@@ -3,7 +3,7 @@ import { Spell } from "./spell";
 
 export class CharacterClass {
   constructor(
-    public id: string,
+    public index: string,
     public name: string,
     public base_masteries: Mastery[],
     public bonus_masteries: Mastery[],

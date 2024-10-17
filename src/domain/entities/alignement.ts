@@ -1,6 +1,6 @@
 export class Alignement {
   constructor(
-    public id: string,
+    public index: string,
     public name: string
   ) {}
 }

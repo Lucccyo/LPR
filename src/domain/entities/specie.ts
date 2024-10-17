@@ -4,11 +4,11 @@ import { Trait } from "./trait";
 import { Bonus } from "./bonus";
 import { SubSpecies } from "./subSpecies";
 
-export class Species {
+export class Specie {
   constructor(
-    public id: string,
+    public index: string,
     public name: string,
-    public height: number,
+    public size: number,
     public base_masteries: Mastery[],
     public bonus_masteries: Mastery[],
     public base_languages: Language[],

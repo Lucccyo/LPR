@@ -2,9 +2,9 @@ import express from 'express';
 import { CharClassController } from './interfaces/controllers/CharClassController';
 import { DndApiCharClassRepository } from './infrastructure/repositories/DndApiCharClassesRepository';
 import { FetchCharClassesUseCase } from './usecases/FetchCharClassesUseCase';
-import { DndApiSubSpeciesRepository } from './infrastructure/repositories/DndApiSubSpeciesRepository';
-import { FetchSubSpeciesUseCase } from './usecases/FetchSubSpeciesUseCase';
-import { SubSpeciesController } from './interfaces/controllers/SubSpeciesController';
+import { DndApiSpeciesRepository } from './infrastructure/repositories/DndApiSpeciesRepository';
+import { FetchSpeciesUseCase } from './usecases/FetchSpeciesUseCase';
+import { SpeciesController } from './interfaces/controllers/SpeciesController';
 
 export function createDndRouter(): express.Router {
   const router = express.Router();
@@ -14,9 +14,9 @@ export function createDndRouter(): express.Router {
   const fetchCharClassesUseCase = new FetchCharClassesUseCase(charClassRepository);
   const charClassController = new CharClassController(fetchCharClassesUseCase);
 
-  const subSpeciesRepository = new DndApiSubSpeciesRepository();
-  const fetchSubSpeciesUseCase = new FetchSubSpeciesUseCase(subSpeciesRepository);
-  const subSpeciesController = new SubSpeciesController(fetchSubSpeciesUseCase);
+  const speciesRepository = new DndApiSpeciesRepository();
+  const fetchSpeciesUseCase = new FetchSpeciesUseCase(speciesRepository);
+  const speciesController = new SpeciesController(fetchSpeciesUseCase);
 
   router.get('/classes', async (_request, response) => {
     try {
@@ -27,9 +27,9 @@ export function createDndRouter(): express.Router {
     }
   });
 
-  router.get('/subspecies', async (_request, response) => {
+  router.get('/species', async (_request, response) => {
     try {
-      const result = await subSpeciesController.getSubSpecies(_request, response);
+      const result = await speciesController.getSpecies(_request, response);
       response.json(result);
     } catch (error) {
       handleError(error, response);

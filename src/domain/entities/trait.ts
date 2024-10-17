@@ -1,6 +1,6 @@
 export class Trait {
   constructor(
-    public id: string,
+    public index: string,
     public name: string,
   ) {}
 }
