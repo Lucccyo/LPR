@@ -42,7 +42,7 @@ export class DndApiSpeciesRepository implements SpeciesRepository {
   private async fetchLanguages(languageUrls: string[]): Promise<Language[]> {
     const languageFetches = languageUrls.map(async (url) => {
       const response = await fetch(url);
-      const data = await response.json() as LanguageApiResponse;
+      const data = (await response.json()) as LanguageApiResponse;
       return new Language(data.index, data.name);
     });
     return await Promise.all(languageFetches);
@@ -51,7 +51,7 @@ export class DndApiSpeciesRepository implements SpeciesRepository {
   private async fetchTraits(traitUrls: string[]): Promise<Trait[]> {
     const traitFetches = traitUrls.map(async (url) => {
       const response = await fetch(url);
-      const data: TraitApiResponse = await response.json() as TraitApiResponse;
+      const data: TraitApiResponse = (await response.json()) as TraitApiResponse;
       return new Trait(data.index, data.name);
     });
     return await Promise.all(traitFetches);
@@ -60,7 +60,7 @@ export class DndApiSpeciesRepository implements SpeciesRepository {
   private async fetchSubSpecies(subspeciesUrl: string): Promise<SubSpecies | undefined> {
     if (!subspeciesUrl) return undefined;
     const response = await fetch(subspeciesUrl);
-    const data = await response.json() as SubSpeciesApiResponse;
+    const data = (await response.json()) as SubSpeciesApiResponse;
     return new SubSpecies(data.index, data.name);
   }
 
@@ -80,14 +80,13 @@ export class DndApiSpeciesRepository implements SpeciesRepository {
     return bonusData.map((bonus) => new Bonus(bonus.ability_score.name, bonus.bonus));
   }
 
-
   public async fetchAll(): Promise<Specie[]> {
     const response = await fetch(this.apiUrl);
-    const data: RaceListApiResponse = await response.json() as RaceListApiResponse;
+    const data: RaceListApiResponse = (await response.json()) as RaceListApiResponse;
 
     const speciesFetches = data.results.map(async (race: { url: string }) => {
       const raceResponse = await fetch(`https://www.dnd5eapi.co${race.url}`);
-      const raceData: RaceApiResponse = await raceResponse.json() as RaceApiResponse;
+      const raceData: RaceApiResponse = (await raceResponse.json()) as RaceApiResponse;
 
       const languageUrls = raceData.languages.map((lang: { url: string }) => `https://www.dnd5eapi.co${lang.url}`);
       const baseLanguages = await this.fetchLanguages(languageUrls);
@@ -98,7 +97,6 @@ export class DndApiSpeciesRepository implements SpeciesRepository {
       const baseMasteries = await this.fetchMasteries(raceData.starting_proficiencies);
 
       const bonuses = this.fetchBonuses(raceData.ability_bonuses);
-
 
       let subspecies: SubSpecies | undefined = undefined;
       if (raceData.subraces.length > 0) {
@@ -116,7 +114,7 @@ export class DndApiSpeciesRepository implements SpeciesRepository {
         [], // bonus_language placeholder
         baseTraits,
         bonuses,
-        subspecies
+        subspecies,
       );
     });
 

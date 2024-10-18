@@ -32,31 +32,33 @@ export class DndApiCharClassRepository implements CharClassRepository {
 
   public async fetchAll(): Promise<CharacterClass[]> {
     const response = await fetch(this.apiUrl);
-    const data: ClassListApiResponse = await response.json() as ClassListApiResponse;
+    const data: ClassListApiResponse = (await response.json()) as ClassListApiResponse;
 
     const characterClassFetches = data.results.map(async (charClass: { url: string }) => {
       const classResponse = await fetch(`https://www.dnd5eapi.co${charClass.url}`);
-      const classData: ClassApiResponse = await classResponse.json() as ClassApiResponse;
+      const classData: ClassApiResponse = (await classResponse.json()) as ClassApiResponse;
 
       const baseMasteries = classData.proficiencies.map((proficiency: { index: string; name: string }) => {
         return new Mastery(proficiency.index, proficiency.name);
       });
 
-      const bonusMasteries = classData.proficiency_choices.map((choice) => {
-        if (choice.from && Array.isArray(choice.from)) {
-          return choice.from.map((proficiency: { index: string; name: string }) => {
-            return new Mastery(proficiency.index, proficiency.name);
-          });
-        }
-        return [];
-      }).flat();
+      const bonusMasteries = classData.proficiency_choices
+        .map((choice) => {
+          if (choice.from && Array.isArray(choice.from)) {
+            return choice.from.map((proficiency: { index: string; name: string }) => {
+              return new Mastery(proficiency.index, proficiency.name);
+            });
+          }
+          return [];
+        })
+        .flat();
 
       const saveThrows = classData.saving_throws.map((save: { name: string }) => save.name).join(", ");
 
       let baseSpells: Spell[] = [];
       if (classData.spells) {
         const spellsResponse = await fetch(`https://www.dnd5eapi.co${classData.spells}`);
-        const spellsData = await spellsResponse.json() as { results: SpellApiResponse[] };
+        const spellsData = (await spellsResponse.json()) as { results: SpellApiResponse[] };
         baseSpells = spellsData.results.map((spell: SpellApiResponse) => {
           return new Spell(spell.index, spell.name);
         });
@@ -66,7 +68,7 @@ export class DndApiCharClassRepository implements CharClassRepository {
       let spellCharacteristics = "";
       if (classData.spellcasting_ability?.url) {
         const abilityResponse = await fetch(`https://www.dnd5eapi.co${classData.spellcasting_ability.url}`);
-        const abilityData: AbilityScoreApiResponse = await abilityResponse.json() as AbilityScoreApiResponse;
+        const abilityData: AbilityScoreApiResponse = (await abilityResponse.json()) as AbilityScoreApiResponse;
         spellCharacteristics = abilityData.name;
       }
 
@@ -77,7 +79,7 @@ export class DndApiCharClassRepository implements CharClassRepository {
         bonusMasteries,
         saveThrows,
         spellCharacteristics,
-        baseSpells
+        baseSpells,
       );
     });
 

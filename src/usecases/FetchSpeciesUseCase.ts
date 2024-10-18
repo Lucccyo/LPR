@@ -1,5 +1,5 @@
-import { SpeciesRepository } from '../domain/repositories/SpeciesRepository';
-import { Specie } from '../domain/entities/specie';
+import { SpeciesRepository } from "../domain/repositories/SpeciesRepository";
+import { Specie } from "../domain/entities/specie";
 
 export class FetchSpeciesUseCase {
   constructor(private speciesRepo: SpeciesRepository) {}
