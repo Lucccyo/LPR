@@ -1,4 +1,4 @@
-import { ApiRepository, FetchReturn } from "../../domain/repositories/ApiRepository";
+import { ApiRepository, FetchReturn } from "../../domain/repositories/apiRepository";
 import { Adapter } from "../../infrastructure/Adapter";
 import { Alignment } from "../../domain/entities/alignment";
 import { Specie } from "../../domain/entities/specie";

@@ -1,4 +1,4 @@
-import { ApiRepository } from "../domain/repositories/ApiRepository";
+import { ApiRepository } from "../domain/repositories/apiRepository";
 
 export class FetchApiUseCase {
   constructor(private apiRepository: ApiRepository) {}
