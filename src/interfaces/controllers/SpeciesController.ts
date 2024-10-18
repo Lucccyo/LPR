@@ -1,5 +1,5 @@
-import { FetchSpeciesUseCase } from '../../usecases/FetchSpeciesUseCase';
-import { Request, Response } from 'express';
+import { FetchSpeciesUseCase } from "../../usecases/FetchSpeciesUseCase";
+import { Request, Response } from "express";
 
 export class SpeciesController {
   constructor(private fetchSpeciesUseCase: FetchSpeciesUseCase) {}
