@@ -1,6 +1,5 @@
 import express from 'express';
 
-// Really not normal imo but it works for now
 import { CharClassController } from './interfaces/controllers/CharClassController';
 import { DndApiCharClassRepository } from './infrastructure/repositories/DndApiCharClassesRepository';
 import { FetchCharClassesUseCase } from './usecases/FetchCharClassesUseCase';
@@ -9,14 +8,13 @@ import { SpeciesController } from './interfaces/controllers/SpeciesController';
 import { DndApiSpeciesRepository } from './infrastructure/repositories/DndApiSpeciesRepository';
 import { FetchSpeciesUseCase } from './usecases/FetchSpeciesUseCase';
 
-import { AlignmentController } from './interfaces/controllers/AlignmentController';
-import { DndApiAlignmentRepository } from './infrastructure/repositories/DndApiAlignmentRepository';
-import { FetchAlignmentsUseCase } from './usecases/FetchAlignmentsUseCase';
+import { ApiController } from './interfaces/controllers/ApiController';
+import { DndApiRepository } from './infrastructure/repositories/DndApiRepository';
+import { FetchApiUseCase } from './usecases/FetchApiUseCase';
 
 export function createDndRouter(): express.Router {
   const router = express.Router();
 
-  // TODO : Find a way to remove all of this or reduce it
   const charClassRepository = new DndApiCharClassRepository();
   const fetchCharClassesUseCase = new FetchCharClassesUseCase(charClassRepository);
   const charClassController = new CharClassController(fetchCharClassesUseCase);
@@ -25,9 +23,9 @@ export function createDndRouter(): express.Router {
   const fetchSpeciesUseCase = new FetchSpeciesUseCase(speciesRepository);
   const speciesController = new SpeciesController(fetchSpeciesUseCase);
 
-  const alignmentRepository = new DndApiAlignmentRepository();
-  const fetchAlignmentsUseCase = new FetchAlignmentsUseCase(alignmentRepository);
-  const alignmentController = new AlignmentController(fetchAlignmentsUseCase);
+  const apiRepository = new DndApiRepository();
+  const fetchApiUseCase = new FetchApiUseCase(apiRepository);
+  const apiController = new ApiController(fetchApiUseCase);
 
   router.get('/classes', async (_request, response) => {
     try {
@@ -47,9 +45,9 @@ export function createDndRouter(): express.Router {
     }
   });
 
-  router.get('/alignments', async (_request, response) => {
+  router.get('/all', async (_request, response) => {
     try {
-      const result = await alignmentController.fetchAllAlignments();
+      const result = await apiController.fetchAllApi();
       response.json(result);
     } catch (error) {
       handleError(error, response);
