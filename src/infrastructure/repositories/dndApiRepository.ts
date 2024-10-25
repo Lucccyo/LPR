@@ -4,8 +4,25 @@ import { Alignment } from "../../domain/entities/alignment";
 import { Specie } from "../../domain/entities/specie";
 import { CharacterClass } from "../../domain/entities/characterClass";
 
+type AllClassesBox = {
+  results: { url: string }[];
+}
+
+// TODO: Wait for andré response
+type DataClass = {
+  index: string;
+  name: string;
+  proficiencies: { index: string; name: string }[];
+  proficiency_choices: { from?: { index: string; name: string }[] }[];
+  saving_throws: { name: string }[];
+  spellcasting_ability?: { url: string };
+  spells?: string;
+}
+
 export class DndApiRepository implements ApiRepository {
     private readonly alignment_url = "https://www.dnd5eapi.co/api/alignments";
+    private readonly classes_url = "https://www.dnd5eapi.co/api/classes";
+
     private readonly adapter: Adapter = new Adapter();
 
     public async loadAlignments(): Promise<Response> {
@@ -14,7 +31,7 @@ export class DndApiRepository implements ApiRepository {
     }
 
     public async loadClasses(): Promise<Response> {
-        const response = await fetch("https://www.dnd5eapi.co/api/classes");
+        const response = await fetch(this.classes_url);
         return response;
     }
 
@@ -30,9 +47,25 @@ export class DndApiRepository implements ApiRepository {
     }
 
     public async getClasses(): Promise<CharacterClass[]> {
-        // const json_data = this.loadClasses();
-        // call adapter here
-        return [];
+      let characterClasses : CharacterClass[] = [];
+      const json_data = await this.loadClasses();
+      const data: AllClassesBox = await json_data.json() as AllClassesBox;
+      for (const result of data.results) {
+        const class_url = result.url;
+        const class_response   = await fetch(`https://www.dnd5eapi.co${class_url}`);
+        const class_data = await class_response.json() as DataClass;
+        if (class_data.spells) {
+          const spells_response = await fetch(`https://www.dnd5eapi.co${class_data.spells}`);
+          await this.adapter.deserializeSpells(spells_response);
+        }
+        if (class_data.spellcasting_ability?.url) {
+          const ability_response = await fetch(`https://www.dnd5eapi.co${class_data.spellcasting_ability.url}`);
+          await this.adapter.deserializeAbilities(ability_response);
+        }
+        const charClass = await this.adapter.deserializeClass(class_data);
+        characterClasses.push(charClass);
+      }
+      return characterClasses;
     }
 
     public async getSpecies(): Promise<Specie[]> {
