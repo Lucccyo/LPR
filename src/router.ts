@@ -1,9 +1,5 @@
 import express from 'express';
 
-import { CharClassController } from './interfaces/controllers/CharClassController';
-import { DndApiCharClassRepository } from './infrastructure/repositories/DndApiCharClassesRepository';
-import { FetchCharClassesUseCase } from './usecases/FetchCharClassesUseCase';
-
 import { SpeciesController } from './interfaces/controllers/SpeciesController';
 import { DndApiSpeciesRepository } from './infrastructure/repositories/DndApiSpeciesRepository';
 import { FetchSpeciesUseCase } from './usecases/FetchSpeciesUseCase';
@@ -13,24 +9,11 @@ import { ApiController } from './interfaces/controllers/apiController';
 export function createDndRouter(): express.Router {
   const router = express.Router();
 
-  const charClassRepository = new DndApiCharClassRepository();
-  const fetchCharClassesUseCase = new FetchCharClassesUseCase(charClassRepository);
-  const charClassController = new CharClassController(fetchCharClassesUseCase);
-
   const speciesRepository = new DndApiSpeciesRepository();
   const fetchSpeciesUseCase = new FetchSpeciesUseCase(speciesRepository);
   const speciesController = new SpeciesController(fetchSpeciesUseCase);
 
   const apiController = new ApiController();
-
-  router.get('/classes', async (_request, response) => {
-    try {
-      const result = await charClassController.fetchAllCharClasses();
-      response.json(result);
-    } catch (error) {
-      handleError(error, response);
-    }
-  });
 
   router.get('/species', async (_request, response) => {
     try {
