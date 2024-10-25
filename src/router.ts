@@ -63,7 +63,7 @@ export function createDndRouter(): express.Router {
     try {
       console.log("Request body:", _request.body);
       const { index, name, user_index, character_class_index } = _request.body || {};
-      if (!index || !name || !user_index || !character_class_index) {
+      if (index == null || name == null || user_index == null || character_class_index == null) {
         response.status(400).json({ error: "Missing required fields" });
         return;
       }
@@ -73,7 +73,7 @@ export function createDndRouter(): express.Router {
 
       response.json(result);
     } catch (error) {
-      handleError(error, response);
+      return handleError(error, response);
     }
   });
 

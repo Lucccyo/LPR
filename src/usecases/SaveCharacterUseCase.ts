@@ -9,6 +9,6 @@ export class SaveCharacterUseCase {
       return this.databaseRepository.update(character.index, character);
     }
 
-    return this.databaseRepository.create(character);
+    return this.databaseRepository.create(character.toJSON());
   }
 }

@@ -1,42 +1,30 @@
 import { DatabaseRepository } from "domain/repositories/DatabaseRepository";
-import { JsonDB, Config } from "node-json-db";
+import { JsonDB, Config, DataError } from "node-json-db";
 
-const db = new JsonDB(new Config("myDataBase", true, false, "/"));
+const db = new JsonDB(new Config("database", true, true, "/"));
 
 export class NJDBRepository implements DatabaseRepository {
-  async create(entry: unknown): Promise<void> {
+  async create(entry: object): Promise<void> {
+    return await db.push("/entries", entry, true);
+  }
+
+  async read(id: number): Promise<object | null> {
     try {
-      return db.push("/entries[]", entry, true);
+      return await db.getObject(`/entries/${id}`);
     } catch (error) {
-      console.error("Error creating entry:", error);
-      throw error;
+      if (error instanceof DataError) {
+        return null; // entry not found
+      } else {
+        throw error;
+      }
     }
   }
 
-  async read(id: number): Promise<unknown> {
-    try {
-      return db.getObject("/entries[" + id + "]");
-    } catch (error) {
-      console.error("Error reading entry:", error);
-      throw error;
-    }
-  }
-
-  async update(id: number, entry: unknown): Promise<void> {
-    try {
-      return db.push("/entries[" + id + "]", entry, true);
-    } catch (error) {
-      console.error("Error updating entry:", error);
-      throw error;
-    }
+  async update(id: number, entry: object): Promise<void> {
+    return await db.push(`/entries/${id}`, entry, true);
   }
 
   async delete(id: number): Promise<void> {
-    try {
-      return db.delete("/entries[" + id + "]");
-    } catch (error) {
-      console.error("Error deleting entry:", error);
-      throw error;
-    }
+    return await db.delete(`/entries/${id}`);
   }
 }
