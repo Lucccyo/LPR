@@ -1,6 +1,6 @@
 export class Bonus {
   constructor(
-    public index: string,
-    public name: number,
+    public name: string,
+    public bonus: number,
   ) {}
 }
