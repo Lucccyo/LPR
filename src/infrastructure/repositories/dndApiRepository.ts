@@ -17,7 +17,7 @@ type DataClass = {
   index: string;
   name: string;
   proficiencies: { index: string; name: string }[];
-  proficiency_choices: { from?: { index: string; name: string }[] }[];
+  proficiency_choices: { from?: { options: { item: { index: string; name: string } }[] } }[];
   saving_throws: { name: string }[];
   spellcasting_ability?: { name: string };
   spells?: string;
@@ -31,6 +31,7 @@ type DataRace = {
   traits: { url: string }[];
   subraces: { url: string }[];
   starting_proficiencies: { index: string; name: string; url: string }[];
+  starting_proficiency_options?: { from: { options: { item: { index: string; name: string } }[] } };
   ability_bonuses: { bonus: number; ability_score: { name: string } }[];
 }
 
