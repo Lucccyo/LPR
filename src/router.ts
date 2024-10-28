@@ -2,9 +2,13 @@ import express from "express";
 
 import { ApiController } from './interfaces/controllers/apiController';
 
+import { UserCharController } from "./interfaces/controllers/UserCharController";
+import { UserCharacter } from "./domain/entities/userCharacter";
+
 export function createDndRouter(): express.Router {
   const router = express.Router();
   const apiController = new ApiController();
+  const userCharController = new UserCharController();
 
   router.get('/all', async (_request, response) => {
     try {
