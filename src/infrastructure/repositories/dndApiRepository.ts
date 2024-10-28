@@ -8,6 +8,10 @@ type AllClassesBox = {
   results: { url: string }[];
 }
 
+type AllSpeciesBox = {
+  results: { url: string }[];
+}
+
 // TODO: Wait for andré response
 type DataClass = {
   index: string;
@@ -19,9 +23,21 @@ type DataClass = {
   spells?: string;
 }
 
+type DataSpecie = {
+  index: string;
+  name: string;
+  size: number;
+  languages: { url: string }[];
+  traits: { url: string }[];
+  subraces: { url: string }[];
+  starting_proficiencies: { index: string; name: string; url: string }[];
+  ability_bonuses: { bonus: number; ability_score: { name: string } }[];
+}
+
 export class DndApiRepository implements ApiRepository {
     private readonly alignment_url = "https://www.dnd5eapi.co/api/alignments";
     private readonly classes_url = "https://www.dnd5eapi.co/api/classes";
+    private readonly species_url = "https://www.dnd5eapi.co/api/races";
 
     private readonly adapter: Adapter = new Adapter();
 
@@ -36,7 +52,7 @@ export class DndApiRepository implements ApiRepository {
     }
 
     public async loadSpecies(): Promise<Response> {
-        const response = await fetch("https://www.dnd5eapi.co/api/species");
+        const response = await fetch(this.species_url);
         return response;
     }
 
@@ -52,7 +68,7 @@ export class DndApiRepository implements ApiRepository {
       const data: AllClassesBox = await json_data.json() as AllClassesBox;
       for (const result of data.results) {
         const class_url = result.url;
-        const class_response   = await fetch(`https://www.dnd5eapi.co${class_url}`);
+        const class_response = await fetch(`https://www.dnd5eapi.co${class_url}`);
         const class_data = await class_response.json() as DataClass;
         if (class_data.spells) {
           const spells_response = await fetch(`https://www.dnd5eapi.co${class_data.spells}`);
@@ -69,9 +85,36 @@ export class DndApiRepository implements ApiRepository {
     }
 
     public async getSpecies(): Promise<Specie[]> {
-        // const json_data = this.loadSpecies();
-        // call adapter here
-        return [];
+      let species: Specie[] = [];
+      const json_data = await this.loadSpecies();
+      const data: AllSpeciesBox = await json_data.json() as AllSpeciesBox;
+      for (const result of data.results) {
+        const race_url = result.url;
+        const specie_response = await fetch(`https://www.dnd5eapi.co${race_url}`);
+        const specie_data = await specie_response.json() as DataSpecie;
+  // language
+        if (specie_data.languages) {
+          const language_urls : string[] = specie_data.languages.map((lang: { url: string }) => `https://www.dnd5eapi.co${lang.url}`);
+          const responses = await Promise.all(language_urls.map(url => fetch(url)));
+          for (const response of responses) {
+            await this.adapter.deserializeLanguages(response);
+          }
+        }
+  // traits
+        const trait_url : string[] = specie_data.traits.map((trait: { url: string }) => `https://www.dnd5eapi.co${trait.url}`);
+        const responses = await Promise.all(trait_url.map(url => fetch(url)));
+        for (const response of responses) {
+          await this.adapter.deserializeTraits(response);
+        }
+  // subspecie
+        if (specie_data.subraces.length > 0) {
+          const subspecie_response = await fetch(`https://www.dnd5eapi.co${specie_data.subraces[0].url}`); // TODO normal de prendre que le 0 ???
+          await this.adapter.deserializeSubSpecies(subspecie_response);
+        }
+        const specie = await this.adapter.deserializeSpecie(specie_data);
+        species.push(specie);
+      }
+      return species;
     }
 
     public async getAll(): Promise<FetchReturn> {

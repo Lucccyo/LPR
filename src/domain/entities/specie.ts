@@ -2,7 +2,7 @@ import { Mastery } from "./mastery";
 import { Language } from "./language";
 import { Trait } from "./trait";
 import { Bonus } from "./bonus";
-import { SubSpecies } from "./subSpecies";
+import { SubSpecie } from "./subSpecie";
 
 export class Specie {
   constructor(
@@ -15,6 +15,6 @@ export class Specie {
     public bonus_language: Language[],
     public base_traits: Trait[],
     public bonus: Bonus[],
-    public subSpecies?: SubSpecies,
+    public subSpecie?: SubSpecie,
   ) {}
 }

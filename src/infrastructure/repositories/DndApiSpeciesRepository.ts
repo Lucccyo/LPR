@@ -3,7 +3,7 @@ import { Mastery } from "../../domain/entities/mastery";
 import { Language } from "../../domain/entities/language";
 import { Trait } from "../../domain/entities/trait";
 import { Bonus } from "../../domain/entities/bonus";
-import { SubSpecies } from "../../domain/entities/subSpecies";
+import { SubSpecie } from "../../domain/entities/subSpecie";
 import { SpeciesRepository } from "../../domain/repositories/SpeciesRepository";
 
 interface RaceApiResponse {
@@ -57,11 +57,11 @@ export class DndApiSpeciesRepository implements SpeciesRepository {
     return await Promise.all(traitFetches);
   }
 
-  private async fetchSubSpecies(subspeciesUrl: string): Promise<SubSpecies | undefined> {
+  private async fetchSubSpecies(subspeciesUrl: string): Promise<SubSpecie | undefined> {
     if (!subspeciesUrl) return undefined;
     const response = await fetch(subspeciesUrl);
     const data = await response.json() as SubSpeciesApiResponse;
-    return new SubSpecies(data.index, data.name);
+    return new SubSpecie(data.index, data.name);
   }
 
   private async fetchMasteries(proficiencyData: { index: string; name: string; url: string }[]): Promise<Mastery[]> {
@@ -100,7 +100,7 @@ export class DndApiSpeciesRepository implements SpeciesRepository {
       const bonuses = this.fetchBonuses(raceData.ability_bonuses);
 
 
-      let subspecies: SubSpecies | undefined = undefined;
+      let subspecies: SubSpecie | undefined = undefined;
       if (raceData.subraces.length > 0) {
         const subspeciesUrl = `https://www.dnd5eapi.co${raceData.subraces[0].url}`;
         subspecies = await this.fetchSubSpecies(subspeciesUrl);
