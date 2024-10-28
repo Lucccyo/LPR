@@ -1,14 +1,14 @@
-import { Mastery } from "./mastery";
+import { Proficiency } from "./proficiency";
 import { Spell } from "./spell";
 
 export class CharacterClass {
   constructor(
     public index: string,
     public name: string,
-    public base_masteries: Mastery[],
-    public bonus_masteries: Mastery[],
-    public save_throws: string,
-    public spell_characteristics: string,
-    public base_spells: Spell[],
+    public proficiencies: Proficiency[],
+    public proficiency_choices: Proficiency[],
+    public saving_throws: string[],
+    public spellcasting_ability: string,
+    public spells: Spell[],
   ) {}
 }

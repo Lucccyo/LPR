@@ -1,4 +1,4 @@
-export class Mastery {
+export class Proficiency {
   constructor(
     public index: string,
     public name: string,
