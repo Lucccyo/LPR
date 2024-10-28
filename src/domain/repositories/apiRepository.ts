@@ -1,21 +1,21 @@
 import { Alignment } from "../entities/alignment";
 import { CharacterClass } from "../entities/characterClass";
-import { Specie } from '../entities/specie';
+import { Race } from '../entities/race';
 
 export type FetchReturn = {
   classes: CharacterClass[],
   alignments: Alignment[],
-  species: Specie[]
+  races: Race[]
 }
 
 export interface ApiRepository {
   loadClasses(): Promise<Response>;
   loadAlignments(): Promise<Response>;
-  loadSpecies(): Promise<Response>;
+  loadRaces(): Promise<Response>;
 
   getClasses(): Promise<CharacterClass[]>;
   getAlignments(): Promise<Alignment[]>;
-  getSpecies(): Promise<Specie[]>;
+  getRaces(): Promise<Race[]>;
 
   getAll(): Promise<FetchReturn>;
 }
