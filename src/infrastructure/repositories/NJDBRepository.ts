@@ -5,7 +5,7 @@ const db = new JsonDB(new Config("database", true, true, "/"));
 
 export class NJDBRepository implements DatabaseRepository {
   async create(entry: object): Promise<void> {
-    return await db.push("/entries", entry, true);
+    return db.push("/entries", entry, true);
   }
 
   async read(id: number): Promise<object | null> {
@@ -21,10 +21,10 @@ export class NJDBRepository implements DatabaseRepository {
   }
 
   async update(id: number, entry: object): Promise<void> {
-    return await db.push(`/entries/${id}`, entry, true);
+    return db.push(`/entries/${id}`, entry, true);
   }
 
   async delete(id: number): Promise<void> {
-    return await db.delete(`/entries/${id}`);
+    return db.delete(`/entries/${id}`);
   }
 }

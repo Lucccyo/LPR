@@ -5,10 +5,9 @@ export class SaveCharacterUseCase {
   constructor(private databaseRepository: DatabaseRepository) {}
 
   async execute(character: UserCharacter) {
-    if (this.databaseRepository.read(character.index) !== null) {
-      return this.databaseRepository.update(character.index, character);
+    if ((await this.databaseRepository.read(character.index)) !== null) {
+      throw new Error("Character already exists");
     }
-
-    return this.databaseRepository.create(character.toJSON());
+    return await this.databaseRepository.update(character.index, character);
   }
 }
