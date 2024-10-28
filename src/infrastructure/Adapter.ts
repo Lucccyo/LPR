@@ -130,7 +130,10 @@ export class Adapter {
 
   public async deserializeLanguages(response: Response) {
     try {
-      const languagesData = await response.json() as DataLanguage[];
+      let languagesData = await response.json() as DataLanguage | DataLanguage[];
+      if (!Array.isArray(languagesData)) {
+        languagesData = [languagesData];
+      }
       languagesData.forEach(language => {
         this.base_language.push(new Language(language.index, language.name));
       });
@@ -142,7 +145,10 @@ export class Adapter {
 
   public async deserializeTraits(response: Response) {
     try {
-      const traitsData = (await response.json()) as DataTrait[];
+      let traitsData = (await response.json()) as DataTrait | DataTrait[];
+      if (!Array.isArray(traitsData)) {
+        traitsData = [traitsData];
+      }
       traitsData.forEach(trait => {
         this.base_traits.push(new Trait(trait.index, trait.name));
       })
@@ -154,7 +160,10 @@ export class Adapter {
 
   public async deserializeSubSpecies(response: Response) {
     try {
-      const data = (await response.json()) as DataSubSpecie[];
+      let data = (await response.json()) as DataSubSpecie | DataSubSpecie[];
+      if (!Array.isArray(data)) {
+        data = [data];
+      }
       this.subSpecie = data.length > 0 ? new SubSpecie(data[0].index, data[0].name) : undefined;
     } catch (error) {
       console.error("Error deserializing sub species:", error);

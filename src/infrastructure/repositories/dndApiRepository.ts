@@ -37,6 +37,7 @@ type DataSpecie = {
 export class DndApiRepository implements ApiRepository {
     private readonly alignment_url = "https://www.dnd5eapi.co/api/alignments";
     private readonly classes_url = "https://www.dnd5eapi.co/api/classes";
+    private readonly species_url = "https://www.dnd5eapi.co/api/races";
 
     private readonly adapter: Adapter = new Adapter();
 
@@ -51,7 +52,7 @@ export class DndApiRepository implements ApiRepository {
     }
 
     public async loadSpecies(): Promise<Response> {
-        const response = await fetch("https://www.dnd5eapi.co/api/species");
+        const response = await fetch(this.species_url);
         return response;
     }
 
