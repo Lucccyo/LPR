@@ -6,3 +6,6 @@ dist
 *.log*
 .npm
 *-lock.json
+
+
+database.json
