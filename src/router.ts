@@ -3,7 +3,7 @@ import express from "express";
 import { ApiController } from "./interfaces/controllers/apiController";
 
 import { UserCharController } from "./interfaces/controllers/UserCharController";
-import { UserCharacter } from "./domain/entities/userCharacter";
+import { UserCharacter, CharacterClassBis, CharacterRaceBis } from "./domain/entities/userCharacter";
 
 export function createDndRouter(): express.Router {
   const router = express.Router();
@@ -42,15 +42,61 @@ export function createDndRouter(): express.Router {
   router.post("/character", express.json(), async (_request, response) => {
     try {
       console.log("Request body:", _request.body);
-      const { index, name, user_index, character_class_index } = _request.body || {};
-      if (index == null || name == null || user_index == null || character_class_index == null) {
+      const {
+        index,
+        name,
+        user_index,
+        character_class,
+        character_alignment,
+        choosen_race,
+      } = _request.body || {};
+
+      if (
+        index == null ||
+        name == null ||
+        user_index == null ||
+        !character_class ||
+        character_class.choosen_index == null ||
+        character_class.choosen_proficiencies == null ||
+        character_alignment == null ||
+        !choosen_race ||
+        choosen_race.choosen_index == null ||
+        choosen_race.choosen_language == null
+      ) {
         response.status(400).json({ error: "Missing required fields" });
         return;
       }
 
-      const character = new UserCharacter(index, name, user_index, character_class_index);
+      const characterClass: CharacterClassBis = {
+        choosen_index: character_class.choosen_index,
+        choosen_proficiencies: character_class.choosen_proficiencies,
+      };
+
+      const characterRace: CharacterRaceBis = {
+        choosen_index: choosen_race.choosen_index,
+        choosen_language: choosen_race.choosen_language,
+      };
+
+      const character = new UserCharacter(
+        index,
+        name,
+        user_index,
+        characterClass,
+        character_alignment,
+        characterRace
+      );
+
       const result = await userCharController.characterSave(character);
 
+      response.json(result);
+    } catch (error) {
+      return handleError(error, response);
+    }
+  });
+
+  router.get("/characters", async (_request, response) => {
+    try {
+      const result = await userCharController.characterGetList();
       response.json(result);
     } catch (error) {
       return handleError(error, response);

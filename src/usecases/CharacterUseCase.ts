@@ -4,6 +4,10 @@ import { DatabaseRepository } from "domain/repositories/DatabaseRepository";
 export class CharacterUseCase {
   constructor(private databaseRepository: DatabaseRepository) {}
 
+  async getAllCharactersId(): Promise<number[]> {
+    return (await this.databaseRepository.getAll() as number[])
+  }
+
   async getCharacter(index: number): Promise<UserCharacter | null> {
     return (await this.databaseRepository.read(index)) as UserCharacter | null;
   }
