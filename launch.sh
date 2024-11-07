@@ -166,7 +166,20 @@ function create_character {
 }
 
 function display_stored_character {
-  echo "super2";
+  response=$(curl 'http://localhost:3000/characters' --progress-bar)
+  res=$(echo "$response" | jq -r '.index[].name')
+  char_names=()
+  if [[ "$res" != "" ]]; then
+    while IFS= read -r line; do
+      char_names+=("$line")
+    done <<< "$res"
+    echo "Selectionnez un personnage à afficher."
+    select_option "${char_names[@]}"
+    choice=char_names[$?]
+    res=$(echo "$response" | jq -r --arg class "$choice" '.index[] | select(.index == $class)')
+    echo "$res"
+  fi
+  quit
 }
 
 
