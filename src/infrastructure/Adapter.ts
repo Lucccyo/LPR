@@ -222,4 +222,13 @@ export class Adapter {
       throw error;
     }
   }
+
+  public async deserializeIndices(data: { [key: string]: any }): Promise<number[]> {
+    try {
+      return Object.keys(data).map((id) => parseInt(id, 10)).filter(Number.isInteger);
+    } catch (error) {
+      console.error("Error deserializing indices:", error);
+      throw error;
+    }
+  }
 }

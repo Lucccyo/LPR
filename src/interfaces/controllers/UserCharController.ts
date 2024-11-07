@@ -14,4 +14,8 @@ export class UserCharController {
   async characterSave(character: UserCharacter): Promise<void> {
     return await characterUseCase.saveCharacter(character);
   }
+
+  async characterGetList(): Promise<number[] | null> {
+    return await characterUseCase.getAllCharactersId();
+  }
 }

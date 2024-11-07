@@ -57,6 +57,15 @@ export function createDndRouter(): express.Router {
     }
   });
 
+  router.get("/characters", async (_request, response) => {
+    try {
+      const result = await userCharController.characterGetList();
+      response.json(result);
+    } catch (error) {
+      return handleError(error, response);
+    }
+  });
+
   return router;
 }
 
