@@ -166,18 +166,25 @@ function create_character {
 }
 
 function display_stored_character {
-  response=$(curl 'http://localhost:3000/characters' --progress-bar)
-  res=$(echo "$response" | jq -r '.index[].name')
+  response=$(curl -s 'http://localhost:3000/characters')
+  indices=$(echo "$response" | jq '.[]')
   char_names=()
-  if [[ "$res" != "" ]]; then
-    while IFS= read -r line; do
-      char_names+=("$line")
-    done <<< "$res"
-    echo "Selectionnez un personnage à afficher."
+  index_array=()
+
+  for index in $indices; do
+    character_response=$(curl -s "http://localhost:3000/character/$index")
+    name=$(echo "$character_response" | jq -r '.name')
+    char_names+=("$name")
+    index_array+=("$index")
+  done
+
+  if [[ "${#char_names[@]}" -gt 0 ]]; then
+    echo "Sélectionnez un personnage à afficher."
     select_option "${char_names[@]}"
-    choice=char_names[$?]
-    res=$(echo "$response" | jq -r --arg class "$choice" '.index[] | select(.index == $class)')
-    echo "$res"
+    choice_index=$?
+    selected_index=${index_array[$choice_index]}
+    selected_character=$(curl -s "http://localhost:3000/character/$selected_index")
+    echo "$selected_character"
   fi
   quit
 }
