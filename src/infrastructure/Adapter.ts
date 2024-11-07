@@ -16,13 +16,13 @@ type DataSpell = {
   index: string;
   name: string;
   level: number;
-}
+};
 
 export type ClassDict = {
   save_throws: string;
   proficiencies: Proficiency[];
   proficiencies_choice: Proficiency[];
-}
+};
 
 type DataClass = {
   index: string;
@@ -32,7 +32,7 @@ type DataClass = {
   saving_throws: { name: string }[];
   spellcasting?: { spellcasting_ability: { name: string } };
   spells?: string;
-}
+};
 
 type DataRace = {
   index: string;
@@ -44,17 +44,17 @@ type DataRace = {
   starting_proficiencies: { index: string; name: string; url: string }[];
   starting_proficiency_options?: { from: { options: { item: { index: string; name: string } }[] } };
   ability_bonuses: { bonus: number; ability_score: { name: string } }[];
-}
+};
 
 type DataLanguage = {
   index: string;
   name: string;
-}
+};
 
 type DataTrait = {
   index: string;
   name: string;
-}
+};
 
 type DataSubRace = {
   index: string;
@@ -63,9 +63,9 @@ type DataSubRace = {
     choose: number;
     from: {
       options: { item: { index: string; name: string } }[];
-    }
+    };
   };
-}
+};
 
 export class Adapter {
   private spells: Spell[] = [];
@@ -73,7 +73,7 @@ export class Adapter {
   public async deserializeAlignment(response: Response): Promise<Alignment[]> {
     try {
       const data = (await response.json()) as DataAlignment;
-      return data.results.map(alignment => new Alignment(alignment.index, alignment.name));
+      return data.results.map((alignment) => new Alignment(alignment.index, alignment.name));
     } catch (error) {
       console.error("Error deserializing alignments:", error);
       throw error;
@@ -82,10 +82,10 @@ export class Adapter {
 
   public async deserializeSpells(response: Response) {
     try {
-      const spellsData = await response.json() as { results: DataSpell[] };
+      const spellsData = (await response.json()) as { results: DataSpell[] };
       this.spells = spellsData.results
-        .filter(spell => spell.level === 0)
-        .map(spell => new Spell(spell.index, spell.name));
+        .filter((spell) => spell.level === 0)
+        .map((spell) => new Spell(spell.index, spell.name));
     } catch (error) {
       console.error("Error deserializing spells:", error);
       throw error;
@@ -94,11 +94,13 @@ export class Adapter {
 
   public async deserializeClass(class_data: DataClass): Promise<CharacterClass> {
     try {
-      const proficiencies = class_data.proficiencies.map(proficiency => new Proficiency(proficiency.index, proficiency.name));
+      const proficiencies = class_data.proficiencies.map(
+        (proficiency) => new Proficiency(proficiency.index, proficiency.name),
+      );
 
-      const proficiencies_choice = class_data.proficiency_choices.flatMap(choice => {
+      const proficiencies_choice = class_data.proficiency_choices.flatMap((choice) => {
         if (choice.from && Array.isArray(choice.from.options)) {
-          return choice.from.options.flatMap(option => {
+          return choice.from.options.flatMap((option) => {
             if (option.item && option.item.index && option.item.name) {
               return new Proficiency(option.item.index, option.item.name);
             }
@@ -107,15 +109,15 @@ export class Adapter {
         }
         return [];
       });
-      let spellcasting_ability = class_data.spellcasting?.spellcasting_ability?.name ?? "";
+      const spellcasting_ability = class_data.spellcasting?.spellcasting_ability?.name ?? "";
       return new CharacterClass(
         class_data.index,
         class_data.name,
         proficiencies,
         proficiencies_choice,
-        class_data.saving_throws.map(st => st.name),
+        class_data.saving_throws.map((st) => st.name),
         spellcasting_ability,
-        this.spells
+        this.spells,
       );
     } catch (error) {
       console.error("Error deserializing character class:", error);
@@ -129,11 +131,11 @@ export class Adapter {
 
   public async deserializeLanguages(response: Response) {
     try {
-      let languagesData = await response.json() as DataLanguage | DataLanguage[];
+      let languagesData = (await response.json()) as DataLanguage | DataLanguage[];
       if (!Array.isArray(languagesData)) {
         languagesData = [languagesData];
       }
-      languagesData.forEach(language => {
+      languagesData.forEach((language) => {
         this.languages.push(new Language(language.index, language.name));
       });
     } catch (error) {
@@ -148,9 +150,9 @@ export class Adapter {
       if (!Array.isArray(traitsData)) {
         traitsData = [traitsData];
       }
-      traitsData.forEach(trait => {
+      traitsData.forEach((trait) => {
         this.traits.push(new Trait(trait.index, trait.name));
-      })
+      });
     } catch (error) {
       console.error("Error deserializing traits:", error);
       throw error;
@@ -165,11 +167,11 @@ export class Adapter {
       }
 
       const languageOptions = data[0].language_options
-      ? data[0].language_options.from.options.map(option => ({
-          index: option.item.index,
-          name: option.item.name,
-        }))
-      : [];
+        ? data[0].language_options.from.options.map((option) => ({
+            index: option.item.index,
+            name: option.item.name,
+          }))
+        : [];
 
       this.subrace = data.length > 0 ? [new Subrace(data[0].index, data[0].name, languageOptions)] : [];
     } catch (error) {
@@ -180,16 +182,16 @@ export class Adapter {
 
   public async deserializeRace(race_data: DataRace): Promise<Race> {
     try {
-      let proficiencies: Proficiency[] = [];
+      const proficiencies: Proficiency[] = [];
       if (race_data.starting_proficiencies && race_data.starting_proficiencies.length > 0) {
         race_data.starting_proficiencies.map((proficiency) => {
           proficiencies.push(new Proficiency(proficiency.index, proficiency.name));
         });
-      };
+      }
 
       let proficiencies_choice: Proficiency[] = [];
       if (race_data.starting_proficiency_options && race_data.starting_proficiency_options.from.options) {
-        proficiencies_choice = race_data.starting_proficiency_options.from.options.flatMap(option => {
+        proficiencies_choice = race_data.starting_proficiency_options.from.options.flatMap((option) => {
           if (option.item && option.item.index && option.item.name) {
             return new Proficiency(option.item.index, option.item.name);
           }
@@ -197,7 +199,7 @@ export class Adapter {
         });
       }
 
-      let bonus = race_data.ability_bonuses.map((bonus) => new AbilityBonus(bonus.ability_score.name, bonus.bonus));
+      const bonus = race_data.ability_bonuses.map((bonus) => new AbilityBonus(bonus.ability_score.name, bonus.bonus));
       const languages = this.languages;
       const traits = this.traits;
       const subrace = this.subrace;
@@ -213,7 +215,7 @@ export class Adapter {
         languages,
         traits,
         bonus,
-        subrace
+        subrace,
       );
     } catch (error) {
       console.error("Error deserializing character race:", error);
