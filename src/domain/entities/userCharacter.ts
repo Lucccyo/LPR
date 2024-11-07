@@ -1,37 +1,30 @@
-export type CharacterClassBis = {
-  choosen_index: string;
-  choosen_proficiencies: string;
-}
-
-export type CharacterRaceBis = {
-  choosen_index: string;
-  choosen_language: string;
-}
+import { CharacterClass } from "./characterClass"
+import { Race } from "./race"
 
 export class UserCharacter {
   constructor(
     public index: number,
     public name: string,
     public user_index: string,
-    public character_class: CharacterClassBis,
-    public characterAlignment: string,
-    public choosenRace: CharacterRaceBis,
+    public character_class: CharacterClass,
+    public character_alignment: string,
+    public character_race: Race,
   ) {}
 
+  private static serialize(obj: any): any {
+    if (obj === null || typeof obj !== "object") return obj;
+    if (Array.isArray(obj)) return obj.map(UserCharacter.serialize);
+
+    const serializedObject: any = {};
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        serializedObject[key] = UserCharacter.serialize(obj[key]);
+      }
+    }
+    return serializedObject;
+  }
+
   toJSON(): object {
-    return {
-      index: this.index,
-      name: this.name,
-      user_index: this.user_index,
-      character_class: {
-        choosen_index: this.character_class.choosen_index,
-        choosen_proficiencies: this.character_class.choosen_proficiencies,
-      },
-      character_alignment: this.characterAlignment,
-      choosen_race: {
-        choosen_index: this.choosenRace.choosen_index,
-        choosen_language: this.choosenRace.choosen_language,
-      },
-    };
+    return UserCharacter.serialize(this);
   }
 }
