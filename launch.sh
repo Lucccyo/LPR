@@ -43,23 +43,34 @@ function select_option {
     return $selected
 }
 
+function create_character {
+  echo "super";
+}
 
+function display_stored_character {
+  echo "super2";
+}
 
-
-
+$TERM -e npm start &
 
 echo "Les p'tits rôlistes — Home —"
 echo "Selectionnez une action."
 echo
 
-options=("Créer un personnage." "Afficher les personnages enregistré.")
+options=("Créer un personnage." "Afficher les personnages enregistrés.")
 
 select_option "${options[@]}"
 choice=$?
 
 case "$choice" in
-  0) echo "1"
+  0)
+    echo "Les p'tits rôlistes — Création de personnage —"
+    echo
+    create_character
     ;;
-  1) echo "2"
+  1)
+    echo "Les p'tits rôlistes — Afficher les personnages enregistrés —"
+    echo
+    display_stored_character
     ;;
 esac
