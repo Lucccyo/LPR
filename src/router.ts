@@ -3,7 +3,7 @@ import express from "express";
 import { ApiController } from "./interfaces/controllers/apiController";
 
 import { UserCharController } from "./interfaces/controllers/UserCharController";
-import { UserCharacter, CharacterClassBis, CharacterRaceBis } from "./domain/entities/userCharacter";
+import { UserCharacter } from "./domain/entities/userCharacter";
 
 export function createDndRouter(): express.Router {
   const router = express.Router();
@@ -47,8 +47,11 @@ export function createDndRouter(): express.Router {
         name,
         user_index,
         character_class,
+        prof_choice,
         character_alignment,
         choosen_race,
+        choosen_subrace,
+        choosen_language,
       } = _request.body || {};
 
       if (
@@ -56,34 +59,25 @@ export function createDndRouter(): express.Router {
         name == null ||
         user_index == null ||
         !character_class ||
-        character_class.choosen_index == null ||
-        character_class.choosen_proficiencies == null ||
+        character_class == null ||
+        prof_choice == null ||
         character_alignment == null ||
         !choosen_race ||
-        choosen_race.choosen_index == null ||
-        choosen_race.choosen_language == null
+        choosen_race == null ||
+        choosen_subrace == null ||
+        choosen_language == null
       ) {
         response.status(400).json({ error: "Missing required fields" });
         return;
       }
 
-      const characterClass: CharacterClassBis = {
-        choosen_index: character_class.choosen_index,
-        choosen_proficiencies: character_class.choosen_proficiencies,
-      };
-
-      const characterRace: CharacterRaceBis = {
-        choosen_index: choosen_race.choosen_index,
-        choosen_language: choosen_race.choosen_language,
-      };
-
       const character = new UserCharacter(
         index,
         name,
         user_index,
-        characterClass,
+        character_class,
         character_alignment,
-        characterRace
+        choosen_race
       );
 
       const result = await userCharController.characterSave(character);
