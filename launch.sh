@@ -48,13 +48,18 @@ function select_option {
 
 
 
-echo "bonjour"
+echo "Les p'tits rôlistes — Home —"
+echo "Selectionnez une action."
 echo
 
-options=("one" "two" "three")
+options=("Créer un personnage." "Afficher les personnages enregistré.")
 
 select_option "${options[@]}"
 choice=$?
 
-echo "Choosen index = $choice"
-echo "        value = ${options[$choice]}"
+case "$choice" in
+  0) echo "1"
+    ;;
+  1) echo "2"
+    ;;
+esac
