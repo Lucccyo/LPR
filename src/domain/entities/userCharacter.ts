@@ -8,7 +8,7 @@ export class UserCharacter {
     public user_index: string,
     public character_class: CharacterClass,
     public character_alignment: string,
-    public choosen_race: Race,
+    public character_race: Race,
   ) {}
 
   private static serialize(obj: any): any {

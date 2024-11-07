@@ -1,9 +1,7 @@
 import express from "express";
 
 import { ApiController } from "./interfaces/controllers/apiController";
-
 import { UserCharController } from "./interfaces/controllers/UserCharController";
-import { UserCharacter } from "./domain/entities/userCharacter";
 
 export function createDndRouter(): express.Router {
   const router = express.Router();
@@ -41,48 +39,30 @@ export function createDndRouter(): express.Router {
 
   router.post("/character", express.json(), async (_request, response) => {
     try {
-      console.log("Request body:", _request.body);
-      const {
-        index,
-        name,
-        user_index,
-        character_class,
-        prof_choice,
-        character_alignment,
-        choosen_race,
-        choosen_subrace,
-        choosen_language,
-      } = _request.body || {};
+      const requestData = _request.body || {};
 
-      if (
-        index == null ||
-        name == null ||
-        user_index == null ||
-        !character_class ||
-        character_class == null ||
-        prof_choice == null ||
-        character_alignment == null ||
-        !choosen_race ||
-        choosen_race == null ||
-        choosen_subrace == null ||
-        choosen_language == null
-      ) {
-        response.status(400).json({ error: "Missing required fields" });
+      const requiredFields = [
+        "index",
+        "name",
+        "user_index",
+        "character_class",
+        "prof_choice",
+        "character_alignment",
+        "choosen_race",
+        "choosen_subrace",
+        "choosen_language",
+      ];
+
+      const missingFields = requiredFields.filter(field => requestData[field] == null);
+
+      if (missingFields.length > 0) {
+        response.status(400).json({ error: "Missing required fields", missingFields });
         return;
       }
 
-      const character = new UserCharacter(
-        index,
-        name,
-        user_index,
-        character_class,
-        character_alignment,
-        choosen_race
-      );
+      await userCharController.characterSave(requestData);
 
-      const result = await userCharController.characterSave(character);
-
-      response.json(result);
+      response.status(201).json({ message: "Character created successfully" });
     } catch (error) {
       return handleError(error, response);
     }
