@@ -52,12 +52,18 @@ function display_stored_character {
 }
 
 $TERM -e npm start &
+TERM_PID=$!
+
+function quit {
+  kill "$TERM_PID"
+  exit
+}
 
 echo "Les p'tits rôlistes — Home —"
 echo "Selectionnez une action."
 echo
 
-options=("Créer un personnage." "Afficher les personnages enregistrés.")
+options=("Créer un personnage." "Afficher les personnages enregistrés." "Quitter")
 
 select_option "${options[@]}"
 choice=$?
@@ -72,5 +78,8 @@ case "$choice" in
     echo "Les p'tits rôlistes — Afficher les personnages enregistrés —"
     echo
     display_stored_character
+    ;;
+  2)
+    quit
     ;;
 esac
