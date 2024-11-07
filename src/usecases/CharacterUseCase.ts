@@ -79,8 +79,10 @@ export class CharacterUseCase {
     character.character_race.languages.push(language);
     character.character_class.proficiencies.push(proficiency);
 
-    console.log(character);
-
-    await this.databaseRepository.create(character);
+    if (this.databaseRepository.read(character.index) !== null) {
+      await this.databaseRepository.update(character.index, character);
+    } else {
+      await this.databaseRepository.create(character.toJSON());
+    }
   }
 }
