@@ -40,28 +40,7 @@ export function createDndRouter(): express.Router {
   router.post("/character", express.json(), async (_request, response) => {
     try {
       const requestData = _request.body || {};
-
-      const requiredFields = [
-        "index",
-        "name",
-        "user_index",
-        "character_class",
-        "prof_choice",
-        "character_alignment",
-        "choosen_race",
-        "choosen_subrace",
-        "choosen_language",
-      ];
-
-      const missingFields = requiredFields.filter(field => requestData[field] == null);
-
-      if (missingFields.length > 0) {
-        response.status(400).json({ error: "Missing required fields", missingFields });
-        return;
-      }
-
       await userCharController.characterSave(requestData);
-
       response.status(201).json({ message: "Character created successfully" });
     } catch (error) {
       return handleError(error, response);
