@@ -47,12 +47,14 @@ function select_option {
 $TERM -e npm start &
 TERM_PID=$!
 
+
 function quit {
   kill "$TERM_PID"
   exit
 }
 
 function create_character {
+  echo "Téléchargement des données de l'API..."
   response=$(curl 'http://localhost:3000/all' --progress-bar)
 
   index=0
@@ -143,17 +145,7 @@ function create_character {
     chosen_lang=${languages[$?]}
   fi
 
-  echo "Récapitulation:"
-  echo "index: {$index}"
-  echo "nom: ${character_name}"
-  echo "classe: ${chosen_class}"
-  echo "classe proficiency: ${chosen_class_proficiency}"
-  echo "alignement: ${chosen_alignment}"
-  echo "race: ${chosen_race}"
-  echo "sous-race: ${chosen_subrace}"
-  echo "race proficiency: ${chosen_race_starting_proficiency}"
-  echo "language option: ${chosen_lang}"
-
+  echo "Enregistrement de ${character_name} dans la base de données..."
   curl -X POST http://localhost:3000/character \
     -H "Content-Type: application/json" \
     -d "{
@@ -167,8 +159,7 @@ function create_character {
       \"choosen_subrace\": \"$chosen_subrace\",
       \"choosen_language\": \"$chosen_lang\"
     }"
-
-  quit
+    echo "${character_name} enregistré !"
 }
 
 function display_stored_character {
@@ -192,7 +183,6 @@ function display_stored_character {
     selected_character=$(curl -s "http://localhost:3000/character/$selected_index")
     display_character_details "$selected_character"
   fi
-  quit
 }
 
 function display_character_details {
@@ -220,7 +210,7 @@ function display_character_details {
   saving_throws=$(echo "$character_json" | jq -r '.character_class.saving_throws[]' | paste -sd ", " -)
   spells=$(echo "$character_json" | jq -r '.character_class.spells[].name' | paste -sd ", " -)
   languages=$(echo "$character_json" | jq -r '.character_race.languages[].name' | paste -sd ", " -)
-  
+
   printf "${BOLD}${CYAN}Character:${RESET} ${YELLOW}%s ${RESET}the ${RED}%s${RESET} ${MAGENTA}%s${RESET}\n" "$name" "$race_display" "$class_name"
   printf "${BOLD}${CYAN}Alignment:${RESET} ${YELLOW}%s${RESET}\n" "$alignment"
   printf "${BOLD}${CYAN}Proficiencies:${RESET} ${GREEN}%s${RESET}\n" "$proficiencies"
@@ -229,26 +219,28 @@ function display_character_details {
   printf "${BOLD}${CYAN}Languages:${RESET} ${GREEN}%s${RESET}\n" "$languages"
 }
 
-echo "Les p'tits rôlistes — Home —"
-echo "Selectionnez une action."
-echo
 
-options=("Créer un personnage." "Afficher les personnages enregistrés." "Quitter")
-select_option "${options[@]}"
-choice=$?
+while true; do
+  echo "Les p'tits rôlistes — Home —"
+  echo "Selectionnez une action."
+  echo
 
-case "$choice" in
-  0)
-    echo "Les p'tits rôlistes — Création de personnage —"
-    echo
-    create_character
-    ;;
-  1)
-    echo "Les p'tits rôlistes — Afficher les personnages enregistrés —"
-    echo
-    display_stored_character
-    ;;
-  2)
-    quit
-    ;;
-esac
+  options=("Créer un personnage." "Afficher les personnages enregistrés." "Quitter")
+  select_option "${options[@]}"
+  choice=$?
+  case "$choice" in
+    0)
+      echo "Les p'tits rôlistes — Création de personnage —"
+      echo
+      create_character
+      ;;
+    1)
+      echo "Les p'tits rôlistes — Afficher les personnages enregistrés —"
+      echo
+      display_stored_character
+      ;;
+    2)
+      quit
+      ;;
+  esac
+done
