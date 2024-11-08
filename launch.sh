@@ -190,11 +190,44 @@ function display_stored_character {
     choice_index=$?
     selected_index=${index_array[$choice_index]}
     selected_character=$(curl -s "http://localhost:3000/character/$selected_index")
-    echo "$selected_character"
+    display_character_details "$selected_character"
   fi
   quit
 }
 
+function display_character_details {
+  character_json=$1
+
+  RESET="\033[0m"
+  BOLD="\033[1m"
+  CYAN="\033[36m"
+  YELLOW="\033[33m"
+  GREEN="\033[32m"
+  MAGENTA="\033[35m"
+  BLUE="\033[34m"
+  RED="\033[31m"
+
+  name=$(echo "$character_json" | jq -r '.name')
+  class_name=$(echo "$character_json" | jq -r '.character_class.name')
+  alignment=$(echo "$character_json" | jq -r '.character_alignment')
+  race_name=$(echo "$character_json" | jq -r '.character_race.name')
+  subrace_name=$(echo "$character_json" | jq -r '.character_race.subraces[0].name // empty')
+  race_display=$race_name
+  if [[ -n "$subrace_name" ]]; then
+    race_display=$subrace_name
+  fi
+  proficiencies=$(echo "$character_json" | jq -r '.character_class.proficiencies[].name' | paste -sd ", " -)
+  saving_throws=$(echo "$character_json" | jq -r '.character_class.saving_throws[]' | paste -sd ", " -)
+  spells=$(echo "$character_json" | jq -r '.character_class.spells[].name' | paste -sd ", " -)
+  languages=$(echo "$character_json" | jq -r '.character_race.languages[].name' | paste -sd ", " -)
+  
+  printf "${BOLD}${CYAN}Character:${RESET} ${YELLOW}%s ${RESET}the ${RED}%s${RESET} ${MAGENTA}%s${RESET}\n" "$name" "$race_display" "$class_name"
+  printf "${BOLD}${CYAN}Alignment:${RESET} ${YELLOW}%s${RESET}\n" "$alignment"
+  printf "${BOLD}${CYAN}Proficiencies:${RESET} ${GREEN}%s${RESET}\n" "$proficiencies"
+  printf "${BOLD}${CYAN}Saving Throws:${RESET} ${MAGENTA}%s${RESET}\n" "$saving_throws"
+  printf "${BOLD}${CYAN}Spells:${RESET} ${BLUE}%s${RESET}\n" "$spells"
+  printf "${BOLD}${CYAN}Languages:${RESET} ${GREEN}%s${RESET}\n" "$languages"
+}
 
 echo "Les p'tits rôlistes — Home —"
 echo "Selectionnez une action."
