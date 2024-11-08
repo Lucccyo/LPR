@@ -55,6 +55,11 @@ function quit {
 function create_character {
   response=$(curl 'http://localhost:3000/all' --progress-bar)
 
+  index=0
+  while curl --silent --head "http://localhost:3000/character/$index" | grep -q "200 OK"; do
+    ((index++))
+  done
+
   echo "Veuillez entrer le nom de votre personnage:"
   read character_name
 
@@ -139,7 +144,8 @@ function create_character {
   fi
 
   echo "Récapitulation:"
-  echo "pseudo: ${character_name}"
+  echo "index: {$index}"
+  echo "nom: ${character_name}"
   echo "classe: ${chosen_class}"
   echo "classe proficiency: ${chosen_class_proficiency}"
   echo "alignement: ${chosen_alignment}"
@@ -151,7 +157,7 @@ function create_character {
   curl -X POST http://localhost:3000/character \
     -H "Content-Type: application/json" \
     -d "{
-      \"index\": 1,
+      \"index\": \"$index\",
       \"name\": \"$character_name\",
       \"user_index\": 1,
       \"character_class\": \"$chosen_class\",

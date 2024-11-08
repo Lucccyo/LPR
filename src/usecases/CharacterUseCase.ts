@@ -34,7 +34,6 @@ export class CharacterUseCase {
       !name ||
       !user_index ||
       !character_class ||
-      !prof_choice ||
       !choosen_race
     ) {
       throw new Error("Missing required fields");
